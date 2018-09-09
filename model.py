@@ -12,7 +12,7 @@ class Pix2pix(object):
 		self.global_step = tf.Variable(0, name='global_step', trainable=False)
 		self.use_gpu = FLAGS.use_gpu
 
-		device = '/gpu:0' if self.use_gpu else '/cpu:0'
+		device = '/device:gpu:0' if self.use_gpu else '/cpu:0'
 		with tf.device(device):
 			self.g_input = tf.placeholder(tf.float32, [None, 256, 256, 3], 'g_input')
 
@@ -33,9 +33,9 @@ class Pix2pix(object):
 			self.vars_d = [var for var in tf.trainable_variables() if var.name.startswith("d-")]
 			self.vars_g = [var for var in tf.trainable_variables() if var.name.startswith("g-")]
 
-			self.optimizer_d = tf.train.AdamOptimizer(FLAGS.learning_rate) \
+			self.optimizer_d = tf.train.AdamOptimizer(FLAGS.lr_d) \
 				.minimize(self.loss_d, var_list=self.vars_d)
-			self.optimizer_g = tf.train.AdamOptimizer(FLAGS.learning_rate) \
+			self.optimizer_g = tf.train.AdamOptimizer(FLAGS.lr_g) \
 				.minimize(self.loss_d, var_list=self.vars_g, global_step=self.global_step)
 
 	def generator(self, input):
@@ -51,7 +51,7 @@ class Pix2pix(object):
 		'''
 		filter_counts = [3, 64, 128, 256, 512, 512, 512, 512, 512]
 
-		device = '/gpu:0' if self.use_gpu else '/cpu:0'
+		device = '/device:gpu:0' if self.use_gpu else '/cpu:0'
 		with tf.device(device):
 			encoders = []
 			encoders.append(input)
@@ -91,7 +91,7 @@ class Pix2pix(object):
 			output:
 				guess: a symbolic scalar that predicts whether output is real (1) or fake (0)
 		'''
-		device = '/gpu:0' if self.use_gpu else '/cpu:0'
+		device = '/device:gpu:0' if self.use_gpu else '/cpu:0'
 		with tf.device(device):
 			z = tf.concat((input, output), axis=3, name='d-concat')
 			with slim.arg_scope([slim.conv2d],
@@ -119,7 +119,8 @@ class Pix2pix(object):
 
 if __name__ == "__main__":
 	flags = tf.app.flags
-	flags.DEFINE_float("learning_rate", 0.0002, "")
+	flags.DEFINE_float("lr_d", 0.0002, "")
+	flags.DEFINE_float("lr_g", 0.0002, "")
 
 	dcgan = Pix2pix(flags.FLAGS)
 	dcgan.test_model()
