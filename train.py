@@ -42,7 +42,8 @@ def main():
 		saver = tf.train.Saver(max_to_keep=10)
 
 		# initialize Tensorflow session and start training
-		with tf.Session() as sess:
+		config = tf.ConfigProto(allow_soft_placement = True)
+		with tf.Session(config = config) as sess:
 			# initialize all variables
 			print("Initializing...")
 			sess.run(init_op)
