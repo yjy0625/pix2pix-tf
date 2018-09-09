@@ -10,6 +10,7 @@ class Pix2pix(object):
 			Builds the GAN model, including generator, discriminator, losses, and optimizers.
 		'''
 		self.global_step = tf.Variable(0, name='global_step', trainable=False)
+		self.use_gpu = FLAGS.use_gpu
 
 		self.g_input = tf.placeholder(tf.float32, [None, 256, 256, 3], 'g_input')
 
