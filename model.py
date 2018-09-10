@@ -25,7 +25,7 @@ class Pix2pix(object):
 		self.loss_d_fake = -tf.reduce_mean(tf.log(1.0 - self.d_fake + eps))
 		self.loss_d = tf.multiply(0.5, (self.loss_d_real + self.loss_d_fake), name='loss_d')
 		self.loss_g_gan = -tf.reduce_mean(tf.log(self.d_fake + eps))
-		self.loss_g_l1 = tf.reduce_mean(tf.losses.absolute_difference(self.real_output, self.fake_output), [1, 2, 3])
+		self.loss_g_l1 = tf.reduce_mean(tf.abs(self.real_output - self.fake_output))
 		self.loss_g = tf.add(self.loss_g_gan, FLAGS.lam * self.loss_g_l1, name='loss_g')
 
 		self.total_loss = tf.add(self.loss_d, self.loss_g, name='total_loss')
