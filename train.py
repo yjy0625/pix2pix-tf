@@ -61,7 +61,7 @@ def main():
 			threads = tf.train.start_queue_runners(sess, coord)
 
 			# configure summary writer
-			summary_path = os.path.join('./', FLAGS.log_dir, FLAGS.version)
+			summary_path = os.path.join('./', FLAGS.log_dir, FLAGS.dataset, FLAGS.version)
 			mkdir(summary_path)
 			summary_writer = tf.summary.FileWriter(summary_path, graph=sess.graph)
 
@@ -113,10 +113,10 @@ def main():
 
 				# store checkpoint in file once in a while
 				if (step > 0 and step % 1000 == 0) or (step == max_steps - 1):
-					save_dir = os.path.join('./', FLAGS.checkpoint_dir, FLAGS.version)
+					save_dir = os.path.join('./', FLAGS.checkpoint_dir, FLAGS.dataset, FLAGS.version)
 					mkdir(save_dir)
 
-					save_ckpt = os.path.join('./', save_dir, 'p2p_'+str(_global_step)+'.ckpt')
+					save_ckpt = os.path.join('./', save_dir, 'p2p_'+str(step)+'.ckpt')
 					saver.save(sess, save_ckpt)
 					print('Weights have been saved')
 					
@@ -142,7 +142,7 @@ def main():
 				save_count = 0
 				for img in output:
 					save_count += 1
-					save_path = os.path.join('./', FLAGS.output_dir, str(save_count) + '.' + FLAGS.image_ext) 
+					save_path = os.path.join('./', FLAGS.output_dir, FLAGS.dataset, FLAGS.version, str(save_count) + '.' + FLAGS.image_ext) 
 					cv2.imwrite(save_path, img)
 				
 				print("Done!")
