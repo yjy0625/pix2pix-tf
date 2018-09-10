@@ -31,8 +31,8 @@ class Pix2pix(object):
 
 		self.total_loss = tf.add(self.loss_d, self.loss_g, name='total_loss')
 		
-		self.vars_d = [var for var in tf.trainable_variables() if var.name.startswith("d-")]
-		self.vars_g = [var for var in tf.trainable_variables() if var.name.startswith("g-")]
+		self.vars_d = [var for var in tf.trainable_variables() if var.name.startswith("D")]
+		self.vars_g = [var for var in tf.trainable_variables() if var.name.startswith("G")]
 
 		self.optimizer_d = tf.train.AdamOptimizer(FLAGS.lr_d) \
 			.minimize(self.loss_d, var_list=self.vars_d)
@@ -52,30 +52,31 @@ class Pix2pix(object):
 		'''
 		filter_counts = [3, 64, 128, 256, 512, 512, 512, 512, 512]
 
-		encoders = []
-		encoders.append(input)
-		with slim.arg_scope([slim.conv2d], 
-							stride=2,
-							padding='SAME',
-							activation_fn=tf.nn.leaky_relu,
-							normalizer_fn=slim.batch_norm):
-			for i in range(8):
-				z = slim.conv2d(encoders[-1], filter_counts[i + 1], [4, 4], scope='g-conv{}'.format(i + 1))
-				encoders.append(z)
+		with tf.variable_scope("G"):
+			encoders = []
+			encoders.append(input)
+			with slim.arg_scope([slim.conv2d], 
+								stride=2,
+								padding='SAME',
+								activation_fn=tf.nn.leaky_relu,
+								normalizer_fn=slim.batch_norm):
+				for i in range(8):
+					z = slim.conv2d(encoders[-1], filter_counts[i + 1], [4, 4], scope='g-conv{}'.format(i + 1))
+					encoders.append(z)
 
-		decoders = []
-		decoders.append(encoders[-1])
-		with slim.arg_scope([slim.conv2d_transpose],
-							stride=2,
-							padding='SAME',
-							activation_fn=tf.nn.leaky_relu,
-							normalizer_fn=slim.batch_norm):
-			for i in range(8):
-				filter_size = [2 ** (8 - i)] * 2
-				z = slim.conv2d_transpose(decoders[-1], filter_counts[7 - i], [4, 4], scope='g-deconv{}'.format(8 - i))
-				if i < 7:
-					z = tf.concat((z, encoders[7 - i]), axis=3, name='g-deconv{}/concat'.format(8 - i))
-				decoders.append(z)
+			decoders = []
+			decoders.append(encoders[-1])
+			with slim.arg_scope([slim.conv2d_transpose],
+								stride=2,
+								padding='SAME',
+								activation_fn=tf.nn.leaky_relu,
+								normalizer_fn=slim.batch_norm):
+				for i in range(8):
+					filter_size = [2 ** (8 - i)] * 2
+					z = slim.conv2d_transpose(decoders[-1], filter_counts[7 - i], [4, 4], scope='g-deconv{}'.format(8 - i))
+					if i < 7:
+						z = tf.concat((z, encoders[7 - i]), axis=3, name='g-deconv{}/concat'.format(8 - i))
+					decoders.append(z)
 
 		return decoders[-1]
 
@@ -90,20 +91,21 @@ class Pix2pix(object):
 			output:
 				guess: a symbolic scalar that predicts whether output is real (1) or fake (0)
 		'''
-		z = tf.concat((input, output), axis=3, name='d-concat')
-		with slim.arg_scope([slim.conv2d],
-							reuse=reuse,
-							padding='SAME',
-							activation_fn=tf.nn.leaky_relu,
-							normalizer_fn=slim.batch_norm):
-			with slim.arg_scope([slim.conv2d], stride=2):
-				z = slim.stack(z, slim.conv2d, [(6, [4, 4]), (64, [4, 4]), (128, [4, 4]), (256, [4, 4])], scope='d-conv1')
+		with tf.variable_scope("D"):
+			z = tf.concat((input, output), axis=3, name='d-concat')
+			with slim.arg_scope([slim.conv2d],
+								reuse=reuse,
+								padding='SAME',
+								activation_fn=tf.nn.leaky_relu,
+								normalizer_fn=slim.batch_norm):
+				with slim.arg_scope([slim.conv2d], stride=2):
+					z = slim.stack(z, slim.conv2d, [(6, [4, 4]), (64, [4, 4]), (128, [4, 4]), (256, [4, 4])], scope='d-conv1')
 
-			with slim.arg_scope([slim.conv2d], stride=1):
-				z = slim.stack(z, slim.conv2d, [(512, [4, 4]), (1, [4, 4])], scope='d-conv2')
+				with slim.arg_scope([slim.conv2d], stride=1):
+					z = slim.stack(z, slim.conv2d, [(512, [4, 4]), (1, [4, 4])], scope='d-conv2')
 
-			z = slim.flatten(z, scope='d-flatten')
-			z = slim.fully_connected(z, 1, reuse=reuse, activation_fn=tf.nn.sigmoid, scope='d-fc')
+				z = slim.flatten(z, scope='d-flatten')
+				z = slim.fully_connected(z, 1, reuse=reuse, activation_fn=tf.nn.sigmoid, scope='d-fc')
 
 		return z
 
