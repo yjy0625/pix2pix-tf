@@ -118,7 +118,7 @@ if __name__ == "__main__":
 	flags.DEFINE_float("lr_d", 0.0002, "")
 	flags.DEFINE_float("lr_g", 0.0002, "")
 
-	device = '/device:gpu:0' if self.use_gpu else '/cpu:0'
+	device = '/cpu:0'
 	with tf.device(device):
 		dcgan = Pix2pix(flags.FLAGS)
 		dcgan.test_model()

@@ -16,7 +16,7 @@ flags.DEFINE_integer("batch_size", 64, "Number of images in batch [64]")
 flags.DEFINE_string("data_dir", "data", "Path to datasets directory [data]")
 flags.DEFINE_string("dataset", "facades", "The name of dataset [facades]")
 # flags for running
-flags.DEFINE_string("version", "v2", "Name of experiment for current run [experiment]")
+flags.DEFINE_string("version", "v2.1", "Name of experiment for current run [experiment]")
 flags.DEFINE_boolean("train", True, "Train if True, otherwise test [False]")
 flags.DEFINE_boolean("use_gpu", True, "Use GPU for if True, otherwise use CPU [True]")
 # directory params
