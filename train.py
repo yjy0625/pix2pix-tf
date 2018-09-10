@@ -111,7 +111,7 @@ def main():
 
 				# store checkpoint in file once in a while
 				if (step > 0 and step % 1000 == 0) or (step == max_steps - 1):
-					save_dir = os.path.join('./', FLAGS.checkpoint_dir, cfgs.version)
+					save_dir = os.path.join('./', FLAGS.checkpoint_dir, FLAGS.version)
 					mkdir(save_dir)
 
 					save_ckpt = os.path.join('./', save_dir, 'p2p_'+str(_global_step)+'.ckpt')
