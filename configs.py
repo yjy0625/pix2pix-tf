@@ -10,6 +10,7 @@ flags = tf.app.flags
 flags.DEFINE_integer("epoch", 250, "Number of epochs to train. [25]")
 flags.DEFINE_float("lr_d", 1e-8, "Learning rate for discriminator [1e-8]")
 flags.DEFINE_float("lr_g", 1e-4, "Learning rate for generator [1e-4]")
+flags.DEFINE_float("lam", 100, "Lambda value for g_l1_loss [100]")
 flags.DEFINE_integer("batch_size", 64, "Number of images in batch [64]")
 # dataset params
 flags.DEFINE_string("data_dir", "data", "Path to datasets directory [data]")

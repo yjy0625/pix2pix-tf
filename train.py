@@ -15,7 +15,9 @@ def mkdir(directory):
 		os.makedirs(directory)
 
 def main():
-	p2p = Pix2pix(FLAGS)
+	device = '/device:gpu:0' if self.use_gpu else '/cpu:0'
+	with tf.device(device):
+		p2p = Pix2pix(FLAGS)
 
 	if FLAGS.train:
 
