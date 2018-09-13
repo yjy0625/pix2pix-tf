@@ -57,7 +57,7 @@ class Pix2pix(object):
 			with slim.arg_scope([slim.conv2d], 
 								stride=2,
 								padding='SAME',
-								activation_fn=tf.nn.leaky_relu,
+								activation_fn=tf.nn.relu,
 								normalizer_fn=slim.batch_norm):
 				for i in range(8):
 					z = slim.conv2d(encoders[-1], filter_counts[i + 1], [4, 4], scope='g-conv{}'.format(i + 1))
@@ -68,7 +68,7 @@ class Pix2pix(object):
 			with slim.arg_scope([slim.conv2d_transpose],
 								stride=2,
 								padding='SAME',
-								activation_fn=tf.nn.leaky_relu,
+								activation_fn=tf.nn.relu,
 								normalizer_fn=slim.batch_norm):
 				for i in range(8):
 					filter_size = [2 ** (8 - i)] * 2
@@ -95,7 +95,7 @@ class Pix2pix(object):
 			with slim.arg_scope([slim.conv2d],
 								reuse=reuse,
 								padding='SAME',
-								activation_fn=tf.nn.leaky_relu,
+								activation_fn=tf.nn.relu,
 								normalizer_fn=slim.batch_norm):
 				with slim.arg_scope([slim.conv2d], stride=2):
 					z = slim.stack(z, slim.conv2d, [(6, [4, 4]), (64, [4, 4]), (128, [4, 4]), (256, [4, 4])], scope='d-conv1')

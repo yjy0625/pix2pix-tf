@@ -28,7 +28,11 @@ def main():
 		tf.summary.image('img/input', p2p.g_input)
 		tf.summary.image('img/real_output', p2p.real_output)
 		tf.summary.image('img/fake_output', p2p.fake_output)
+		tf.summary.scalar('losses/g_loss_gan', p2p.loss_g_gan)
+		tf.summary.scalar('losses/g_loss_l1', p2p.loss_g_l1)
 		tf.summary.scalar('losses/g_loss', p2p.loss_g)
+		tf.summary.scalar('losses/d_loss_real', p2p.loss_d_real)
+		tf.summary.scalar('losses/d_loss_fake', p2p.loss_d_fake)
 		tf.summary.scalar('losses/d_loss', p2p.loss_d)
 		tf.summary.scalar('losses/total_loss', p2p.total_loss)
 

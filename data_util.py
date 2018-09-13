@@ -32,8 +32,8 @@ class BatchLoader(object):
 		filenames = os.listdir(image_path)
 		filenames = list(filter(lambda x: x.endswith('.' + self.image_ext), filenames))
 		
-		img_inputs = np.array([np.array([self.read_image_left_half(os.path.join(image_path, fname)) for fname in filenames])])[0]
-		img_outputs = np.array([np.array([self.read_image_right_half(os.path.join(image_path, fname)) for fname in filenames])])[0]
+		img_inputs = np.array([np.array([self.read_image_right_half(os.path.join(image_path, fname)) for fname in filenames])])[0]
+		img_outputs = np.array([np.array([self.read_image_left_half(os.path.join(image_path, fname)) for fname in filenames])])[0]
 
 		shuffle_index = np.random.permutation(img_inputs.shape[0])
 		self.img_inputs = img_inputs[shuffle_index]
