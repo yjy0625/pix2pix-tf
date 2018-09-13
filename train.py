@@ -67,6 +67,8 @@ def main():
 
 			# get current step of the model
 			curr_step = sess.run(p2p.global_step)
+			if FLAGS.restore:
+				print("Currently at step {}.".format(curr_step))
 
 			# main training loop
 			print("Main training loop starts.")
@@ -84,11 +86,12 @@ def main():
 				start = time.time()
 
 				# update D network
-				_, loss_d = sess.run([p2p.optimizer_d, p2p.loss_d], feed_dict=feed_dict)
+				if step % 10 == 0:
+					sess.run(p2p.optimizer_d, feed_dict=feed_dict)
 
 				# update G network twice for stability
-				# sess.run(p2p.optimizer_g, feed_dict=feed_dict)
-				_, loss_g = sess.run([p2p.optimizer_g, p2p.loss_g], feed_dict=feed_dict)
+				sess.run(p2p.optimizer_g, feed_dict=feed_dict)
+				_, loss_g, loss_d = sess.run([p2p.optimizer_g, p2p.loss_g, p2p.loss_d], feed_dict=feed_dict)
 
 				# get loss
 				loss = loss_d + loss_g
