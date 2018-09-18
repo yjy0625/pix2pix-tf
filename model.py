@@ -21,10 +21,10 @@ class Pix2pix(object):
 		self.d_fake = self.discriminator(self.g_input, self.fake_output, reuse=True)
 
 		eps = 1e-10
-		self.loss_d_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=self.d_real, labels=tf.ones_like(self.d_real)))
-		self.loss_d_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=self.d_fake, labels=tf.zeros_like(self.d_fake)))
+		self.loss_d_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy(logits=self.d_real, labels=tf.ones_like(self.d_real)))
+		self.loss_d_fake = tf.reduce_mean(tf.nn.sigmoid_cross_entropy(logits=self.d_fake, labels=tf.zeros_like(self.d_fake)))
 		self.loss_d = tf.multiply(0.5, (self.loss_d_real + self.loss_d_fake), name='loss_d')
-		self.loss_g_gan = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=self.d_fake, labels=tf.ones_like(self.d_fake)))
+		self.loss_g_gan = tf.reduce_mean(tf.nn.sigmoid_cross_entropy(logits=self.d_fake, labels=tf.ones_like(self.d_fake)))
 		self.loss_g_l1 = tf.reduce_mean(tf.abs(self.real_output - self.fake_output))
 		self.loss_g = tf.add(self.loss_g_gan, FLAGS.lam * self.loss_g_l1, name='loss_g')
 
