@@ -17,13 +17,13 @@ class BatchLoader(object):
 	def read_image_left_half(self, filename):
 		img = cv2.imread(filename)
 		img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-		img = img / 127.5 - 1
+		img = img.astype(np.float32) / 127.5 - 1.0
 		return img[:, :int(img.shape[1]/2 + 0.5), :]
 
 	def read_image_right_half(self, filename):
 		img = cv2.imread(filename)
 		img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
-		img = img / 127.5 - 1
+		img = img.astype(np.float32)/ 127.5 - 1.0
 		return img[:, int(img.shape[1]/2 + 0.5):, :]
 
 	def save_image(self, img):

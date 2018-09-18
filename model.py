@@ -33,9 +33,9 @@ class Pix2pix(object):
 		self.vars_d = [var for var in tf.trainable_variables() if var.name.startswith("D")]
 		self.vars_g = [var for var in tf.trainable_variables() if var.name.startswith("G")]
 
-		self.optimizer_d = tf.train.AdamOptimizer(FLAGS.lr_d) \
+		self.optimizer_d = tf.train.AdamOptimizer(FLAGS.lr_d, beta1=0.5) \
 			.minimize(self.loss_d, var_list=self.vars_d)
-		self.optimizer_g = tf.train.AdamOptimizer(FLAGS.lr_g) \
+		self.optimizer_g = tf.train.AdamOptimizer(FLAGS.lr_g, beta1=0.5) \
 			.minimize(self.loss_d, var_list=self.vars_g, global_step=self.global_step)
 
 	def generator(self, input):
@@ -68,11 +68,14 @@ class Pix2pix(object):
 			with slim.arg_scope([slim.conv2d_transpose],
 								stride=2,
 								padding='SAME',
-								activation_fn=tf.nn.relu,
 								normalizer_fn=slim.batch_norm):
 				for i in range(8):
-					filter_size = [2 ** (8 - i)] * 2
-					z = slim.conv2d_transpose(decoders[-1], filter_counts[7 - i], [4, 4], scope='g-deconv{}'.format(8 - i))
+					if i < 7:
+						activation_fn = tf.nn.relu
+					else:
+						activation_fn = tf.nn.tanh
+
+					z = slim.conv2d_transpose(decoders[-1], filter_counts[7 - i], [4, 4], activation_fn=activation_fn, scope='g-deconv{}'.format(8 - i))
 					if i < 3:
 						z = slim.dropout(z, 0.5, scope='g-deconv{}-dropout'.format(8-i))
 					if i < 7:
