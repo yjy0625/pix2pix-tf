@@ -73,8 +73,10 @@ class Pix2pix(object):
 				for i in range(8):
 					filter_size = [2 ** (8 - i)] * 2
 					z = slim.conv2d_transpose(decoders[-1], filter_counts[7 - i], [4, 4], scope='g-deconv{}'.format(8 - i))
+					if i < 3:
+						z = slim.dropout(z, 0.5, scope='g-deconv{}-dropout'.format(8-i))
 					if i < 7:
-						z = tf.concat((z, encoders[7 - i]), axis=3, name='g-deconv{}/concat'.format(8 - i))
+						z = tf.concat((z, encoders[7 - i]), axis=3, name='g-deconv{}-concat'.format(8 - i))
 					decoders.append(z)
 
 		return decoders[-1]
