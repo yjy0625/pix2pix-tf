@@ -99,17 +99,13 @@ class Pix2pix(object):
 			z = tf.concat((input, output), axis=3, name='d-concat')
 			with slim.arg_scope([slim.conv2d],
 								reuse=reuse,
-								padding='SAME',
 								activation_fn=tf.nn.relu,
 								normalizer_fn=slim.batch_norm):
-				with slim.arg_scope([slim.conv2d], stride=2):
-					z = slim.stack(z, slim.conv2d, [(6, [4, 4]), (64, [4, 4]), (128, [4, 4]), (256, [4, 4])], scope='d-conv1')
+				with slim.arg_scope([slim.conv2d], stride=2, padding='SAME'):
+					z = slim.stack(z, slim.conv2d, [(64, [4, 4]), (128, [4, 4]), (256, [4, 4])], scope='d-conv1')
 
-				with slim.arg_scope([slim.conv2d], stride=1):
+				with slim.arg_scope([slim.conv2d], stride=1, padding='VALID'):
 					z = slim.stack(z, slim.conv2d, [(512, [4, 4]), (1, [4, 4])], scope='d-conv2')
-
-				z = slim.flatten(z, scope='d-flatten')
-				z = slim.fully_connected(z, 1, reuse=reuse, activation_fn=None, scope='d-fc')
 
 		return z
 

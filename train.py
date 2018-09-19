@@ -94,7 +94,6 @@ def main():
 					sess.run(p2p.optimizer_d, feed_dict=feed_dict)
 
 				# update G network twice for stability
-				sess.run(p2p.optimizer_g, feed_dict=feed_dict)
 				_, loss_g, loss_d = sess.run([p2p.optimizer_g, p2p.loss_g, p2p.loss_d], feed_dict=feed_dict)
 
 				# get loss
