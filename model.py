@@ -56,7 +56,6 @@ class Pix2pix(object):
 			with slim.arg_scope([slim.conv2d], 
 								stride=2,
 								padding='SAME',
-								activation_fn=tf.nn.relu,
 								normalizer_fn=slim.batch_norm):
 				for i in range(8):
 					z = slim.conv2d(encoders[-1], filter_counts[i + 1], [4, 4], scope='g-conv{}'.format(i + 1))
@@ -98,13 +97,19 @@ class Pix2pix(object):
 			z = tf.concat((input, output), axis=3, name='d-concat')
 			with slim.arg_scope([slim.conv2d],
 								reuse=reuse,
-								activation_fn=tf.nn.relu,
 								normalizer_fn=slim.batch_norm):
 				with slim.arg_scope([slim.conv2d], stride=2, padding='SAME'):
 					z = slim.stack(z, slim.conv2d, [(64, [4, 4]), (128, [4, 4]), (256, [4, 4])], scope='d-conv1')
 
 				with slim.arg_scope([slim.conv2d], stride=1, padding='VALID'):
-					z = slim.stack(z, slim.conv2d, [(512, [4, 4]), (1, [4, 4])], scope='d-conv2')
+					z = tf.pad(z, tf.constant([[0, 0], [1, 1], [1, 1], [0, 0]]), name='d-pad1')
+					z = slim.conv2d(z, 512, [4, 4], scope='d-conv2')
+
+			with slim.arg_scope([slim.conv2d],
+								reuse=reuse,
+								activation_fn=None):
+				z = tf.pad(z, tf.constant([[0, 0], [1, 1], [1, 1], [0, 0]]), name='d-pad2')
+				z = slim.conv2d(z, 1, [4, 4], scope='d-conv3')
 
 		return z
 
