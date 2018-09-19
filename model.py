@@ -77,7 +77,7 @@ class Pix2pix(object):
 					if i < 3:
 						z = slim.dropout(z, 0.5, scope='g-deconv{}-dropout'.format(8-i))
 					if i < 7:
-						z = tf.concat((z, encoders[7 - i]), axis=3, name='g-deconv{}-concat'.format(8 - i))
+						z = tf.concat((encoders[7 - i], z), axis=3, name='g-deconv{}-concat'.format(8 - i))
 					decoders.append(z)
 
 		return decoders[-1]
@@ -105,11 +105,8 @@ class Pix2pix(object):
 					z = tf.pad(z, tf.constant([[0, 0], [1, 1], [1, 1], [0, 0]]), name='d-pad1')
 					z = slim.conv2d(z, 512, [4, 4], scope='d-conv2')
 
-			with slim.arg_scope([slim.conv2d],
-								reuse=reuse,
-								activation_fn=None):
-				z = tf.pad(z, tf.constant([[0, 0], [1, 1], [1, 1], [0, 0]]), name='d-pad2')
-				z = slim.conv2d(z, 1, [4, 4], scope='d-conv3')
+					z = tf.pad(z, tf.constant([[0, 0], [1, 1], [1, 1], [0, 0]]), name='d-pad2')
+					z = slim.conv2d(z, 1, [4, 4], activation_fn=None, normalizer_fn=None, scope='d-conv3')
 
 		return z
 
