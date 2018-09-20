@@ -35,7 +35,7 @@ class Pix2pix(object):
 		self.optimizer_d = tf.train.AdamOptimizer(FLAGS.lr_d, beta1=0.5) \
 			.minimize(self.loss_d, var_list=self.vars_d)
 		self.optimizer_g = tf.train.AdamOptimizer(FLAGS.lr_g, beta1=0.5) \
-			.minimize(self.loss_d, var_list=self.vars_g, global_step=self.global_step)
+			.minimize(self.loss_g, var_list=self.vars_g, global_step=self.global_step)
 
 	def generator(self, input):
 		'''
@@ -106,7 +106,7 @@ class Pix2pix(object):
 					z = slim.conv2d(z, 512, [4, 4], scope='d-conv2')
 
 					z = tf.pad(z, tf.constant([[0, 0], [1, 1], [1, 1], [0, 0]]), name='d-pad2')
-					z = slim.conv2d(z, 1, [4, 4], activation_fn=None, normalizer_fn=None, scope='d-conv3')
+					z = slim.conv2d(z, 1, [4, 4], activation_fn=tf.nn.sigmoid, normalizer_fn=None, scope='d-conv3')
 
 		return z
 

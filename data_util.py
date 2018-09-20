@@ -52,8 +52,7 @@ class BatchLoader(object):
 		end_ix = start_ix + self.batch_size
 		self.curr_batch += 1
 
-		return self.img_inputs[0:self.batch_size], self.img_outputs[0:self.batch_size]
-		# return self.img_inputs[start_ix:end_ix], self.img_outputs[start_ix: end_ix]
+		return self.img_inputs[start_ix:end_ix], self.img_outputs[start_ix: end_ix]
 
 	def test_class(self):
 		iin, iout = self.load_images()
